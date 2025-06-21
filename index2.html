@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Bites - Advanced Business Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f2f5; /* A slightly cooler gray */
+      }
+      .sidebar {
+        transition: width 0.3s ease;
+      }
+      .sidebar-item {
+        @apply flex items-center p-3 my-2 rounded-lg text-gray-200 hover:bg-gray-700 cursor-pointer transition-colors;
+      }
+      .sidebar-item.active {
+        @apply bg-indigo-600 text-white;
+      }
+      .sidebar-item i {
+        @apply mr-3 w-6 text-center flex-shrink-0;
+      }
+      .input-label {
+        @apply block text-sm font-medium text-gray-600 mb-1;
+      }
+      .input-field {
+        @apply w-full p-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition;
+      }
+      .kpi-card {
+        @apply bg-white p-5 rounded-xl shadow-sm flex items-center justify-between transition-transform hover:scale-105;
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="flex bg-gray-100">
+    <!-- Sidebar Navigation -->
+    <aside
+      class="sidebar w-64 bg-gray-800 text-white min-h-screen p-4 flex flex-col"
+    >
+      <div class="flex items-center mb-8 flex-shrink-0">
+        <i class="fa-solid fa-utensils fa-2x text-indigo-400"></i>
+        <h1 class="text-2xl font-bold ml-3">Campus Bites</h1>
+      </div>
+      <nav class="flex flex-col">
+        <a href="#" class="sidebar-item active" onclick="showPage('overview')">
+          <i class="fa-solid fa-chart-line"></i><span> Overview</span>
+        </a>
+        <a href="#" class="sidebar-item" onclick="showPage('pnl')">
+          <i class="fa-solid fa-file-invoice-dollar"></i
+          ><span> P&L Statement</span>
+        </a>
+        <a href="#" class="sidebar-item" onclick="showPage('marketing')">
+          <i class="fa-solid fa-bullhorn"></i><span> Sales & Marketing</span>
+        </a>
+        <a href="#" class="sidebar-item" onclick="showPage('operations')">
+          <i class="fa-solid fa-gears"></i><span> Operations</span>
+        </a>
+      </nav>
+      <div class="mt-auto text-center w-56 flex-shrink-0">
+        <p id="currentDate" class="text-sm text-gray-400"></p>
+        <p class="text-xs text-gray-500">BBD, Lucknow, UP</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+      <!-- ===== OVERVIEW PAGE ===== -->
+      <div id="overview" class="page-section active">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+          Financial Overview
+        </h1>
+
+        <!-- Input Parameters -->
+        <section class="mb-8 p-6 bg-white rounded-xl shadow-sm">
+          <h2 class="text-xl font-semibold mb-4 text-gray-700">
+            Core Business Assumptions (Editable)
+          </h2>
+          <div
+            id="input-section"
+            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-3 gap-4"
+          >
+            <div>
+              <label for="dailyCustomers" class="input-label"
+                >Customers/Day</label
+              >
+              <input
+                type="number"
+                id="dailyCustomers"
+                value="180"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="avgSpend" class="input-label">Avg. Spend (₹)</label>
+              <input
+                type="number"
+                id="avgSpend"
+                value="80"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="foodCostPercent" class="input-label"
+                >Food Cost %</label
+              >
+              <input
+                type="number"
+                id="foodCostPercent"
+                value="38"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="staffSalary" class="input-label"
+                >Staff Salary (₹)</label
+              >
+              <input
+                type="number"
+                id="staffSalary"
+                value="60000"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="monthlyTender" class="input-label"
+                >Tender Fee/Mo (₹)</label
+              >
+              <input
+                type="number"
+                id="monthlyTender"
+                value="10000"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="otherCosts" class="input-label"
+                >Utilities etc. (₹)</label
+              >
+              <input
+                type="number"
+                id="otherCosts"
+                value="27000"
+                class="input-field"
+              />
+            </div>
+            <div>
+              <label for="marketingSpend" class="input-label"
+                >Marketing/Mo (₹)</label
+              >
+              <input
+                type="number"
+                id="marketingSpend"
+                value="7000"
+                class="input-field"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- KPIs -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <div class="kpi-card">
+            <div>
+              <p class="text-sm text-gray-500">Monthly Revenue</p>
+              <p id="kpi-revenue" class="text-2xl font-bold">₹0</p>
+            </div>
+            <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+              <i class="fa-solid fa-dollar-sign fa-lg"></i>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <p class="text-sm text-gray-500">Monthly Profit</p>
+              <p id="kpi-profit" class="text-2xl font-bold text-green-600">
+                ₹0
+              </p>
+            </div>
+            <div class="bg-green-100 text-green-600 p-3 rounded-full">
+              <i class="fa-solid fa-arrow-trend-up fa-lg"></i>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <p class="text-sm text-gray-500">Break-Even/Day</p>
+              <p id="kpi-breakeven" class="text-2xl font-bold">0</p>
+            </div>
+            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+              <i class="fa-solid fa-users fa-lg"></i>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <p class="text-sm text-gray-500">Profit Margin</p>
+              <p id="kpi-margin" class="text-2xl font-bold text-purple-600">
+                0%
+              </p>
+            </div>
+            <div class="bg-purple-100 text-purple-600 p-3 rounded-full">
+              <i class="fa-solid fa-chart-pie fa-lg"></i>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">
+              Monthly Financial Summary
+            </h2>
+            <canvas id="monthlyPerformanceChart"></canvas>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">
+              Monthly Expense Breakdown
+            </h2>
+            <canvas id="expenseBreakdownChart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- ===== P&L PAGE ===== -->
+      <div id="pnl" class="page-section">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+          Projected Profit & Loss Statement
+        </h1>
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+          <p class="text-sm text-gray-500 mb-4">
+            This statement is dynamically calculated based on the assumptions
+            from the Overview page.
+          </p>
+          <table class="w-full text-left">
+            <tbody>
+              <tr class="border-b">
+                <td class="p-3 text-lg font-semibold" colspan="2">Revenue</td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Sales Revenue</td>
+                <td id="pnl-revenue" class="p-3 text-right font-medium">₹0</td>
+              </tr>
+
+              <tr class="border-b">
+                <td class="p-3 text-lg font-semibold" colspan="2">
+                  Cost of Goods Sold (COGS)
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Raw Material (Food) Cost</td>
+                <td
+                  id="pnl-cogs"
+                  class="p-3 text-right font-medium text-red-600"
+                >
+                  (₹0)
+                </td>
+              </tr>
+
+              <tr class="bg-gray-100 border-y-2 border-gray-300">
+                <td class="p-3 text-lg font-bold">Gross Profit</td>
+                <td id="pnl-gross-profit" class="p-3 text-right font-bold">
+                  ₹0
+                </td>
+              </tr>
+
+              <tr class="border-b">
+                <td class="p-3 text-lg font-semibold mt-4" colspan="2">
+                  Operating Expenses
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Staff Salaries</td>
+                <td id="pnl-salary" class="p-3 text-right font-medium">(₹0)</td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Annual Tender Fee (Monthly)</td>
+                <td id="pnl-tender" class="p-3 text-right font-medium">(₹0)</td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Utilities & Other Costs</td>
+                <td id="pnl-utilities" class="p-3 text-right font-medium">
+                  (₹0)
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3 pl-6">Marketing & Promotions</td>
+                <td id="pnl-marketing" class="p-3 text-right font-medium">
+                  (₹0)
+                </td>
+              </tr>
+              <tr class="border-b">
+                <td class="p-3 pl-6 font-semibold">Total Operating Expenses</td>
+                <td
+                  id="pnl-total-opex"
+                  class="p-3 text-right font-semibold text-red-600"
+                >
+                  (₹0)
+                </td>
+              </tr>
+
+              <tr class="bg-green-100 border-y-2 border-green-400">
+                <td class="p-3 text-xl font-extrabold text-green-800">
+                  Net Profit (Before Tax)
+                </td>
+                <td
+                  id="pnl-net-profit"
+                  class="p-3 text-right text-xl font-extrabold text-green-800"
+                >
+                  ₹0
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== SALES & MARKETING PAGE ===== -->
+      <div id="marketing" class="page-section">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+          Sales & Marketing Analysis
+        </h1>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Metrics -->
+          <div class="lg:col-span-1 flex flex-col gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+              <label for="newCustomers" class="input-label"
+                >New Loyal Customers/Mo</label
+              >
+              <input
+                type="number"
+                id="newCustomers"
+                value="200"
+                class="input-field mb-4"
+              />
+              <h3 class="text-md font-semibold text-gray-700">
+                Customer Acquisition Cost (CAC)
+              </h3>
+              <p class="text-3xl font-bold text-red-600" id="mkt-cac">₹0</p>
+              <p class="text-sm text-gray-500">
+                Total Marketing Spend / New Customers
+              </p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+              <label for="visitsPerMonth" class="input-label"
+                >Avg. Visits / Loyal Customer / Mo</label
+              >
+              <input
+                type="number"
+                id="visitsPerMonth"
+                value="10"
+                class="input-field mb-4"
+              />
+              <h3 class="text-md font-semibold text-gray-700">
+                Customer Lifetime Value (LTV - Annual)
+              </h3>
+              <p class="text-3xl font-bold text-green-600" id="mkt-ltv">₹0</p>
+              <p class="text-sm text-gray-500">
+                Value of one loyal customer over a year
+              </p>
+            </div>
+          </div>
+          <!-- Chart -->
+          <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">LTV vs. CAC Ratio</h2>
+            <canvas id="ltvCacChart"></canvas>
+            <p class="text-center text-sm text-gray-600 mt-4">
+              A healthy business model has an LTV at least 3x its CAC. This
+              chart shows your ratio.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== OPERATIONS PAGE ===== -->
+      <div id="operations" class="page-section">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+          Operations & Startup Costs
+        </h1>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">
+              Return on Investment (ROI)
+            </h2>
+            <div class="mb-4">
+              <label for="startupCost" class="input-label"
+                >Total Startup Cost (Editable)</label
+              >
+              <input
+                type="number"
+                id="startupCost"
+                value="700000"
+                class="input-field"
+              />
+            </div>
+            <p class="text-sm text-gray-500">
+              Time to recoup initial investment based on current profit
+              projection:
+            </p>
+            <p class="text-3xl font-bold text-blue-600" id="ops-roi">
+              ~0 Months
+            </p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-xl font-semibold mb-4">Startup Cost Allocation</h2>
+            <canvas id="startupCostsChartOps"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let monthlyChart, expenseChart, ltvCacChart, startupChartOps;
+
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page-section")
+          .forEach((page) => page.classList.remove("active"));
+        document.getElementById(pageId).classList.add("active");
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((item) => item.classList.remove("active"));
+        document
+          .querySelector(`.sidebar-item[onclick="showPage('${pageId}')"]`)
+          .classList.add("active");
+      }
+
+      const formatCurrency = (value) =>
+        new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0,
+        }).format(value);
+
+      function initializeDashboard() {
+        document.getElementById("currentDate").textContent =
+          new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+        const chartConfigs = {
+          monthly: {
+            id: "monthlyPerformanceChart",
+            type: "bar",
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { callback: (v) => "₹" + v / 1000 + "k" },
+                },
+              },
+            },
+          },
+          expense: {
+            id: "expenseBreakdownChart",
+            type: "doughnut",
+            options: {
+              responsive: true,
+              plugins: { legend: { position: "bottom" } },
+            },
+          },
+          ltvCac: {
+            id: "ltvCacChart",
+            type: "bar",
+            options: {
+              responsive: true,
+              indexAxis: "y",
+              scales: {
+                x: { beginAtZero: true, ticks: { callback: (v) => "₹" + v } },
+              },
+            },
+          },
+          startup: {
+            id: "startupCostsChartOps",
+            type: "pie",
+            data: {
+              labels: [
+                "Renovation",
+                "Kitchen Equipment",
+                "Licenses & Setup",
+                "Contingency",
+              ],
+              datasets: [
+                {
+                  data: [300000, 350000, 80000, 100000],
+                  backgroundColor: ["#fb923c", "#f43f5e", "#8b5cf6", "#10b981"],
+                  hoverOffset: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: "bottom" } },
+            },
+          },
+        };
+
+        monthlyChart = new Chart(
+          document.getElementById(chartConfigs.monthly.id).getContext("2d"),
+          chartConfigs.monthly
+        );
+        expenseChart = new Chart(
+          document.getElementById(chartConfigs.expense.id).getContext("2d"),
+          chartConfigs.expense
+        );
+        ltvCacChart = new Chart(
+          document.getElementById(chartConfigs.ltvCac.id).getContext("2d"),
+          chartConfigs.ltvCac
+        );
+        startupChartOps = new Chart(
+          document.getElementById(chartConfigs.startup.id).getContext("2d"),
+          chartConfigs.startup
+        );
+
+        document
+          .querySelectorAll(
+            "#input-section input, #marketing input, #operations input"
+          )
+          .forEach((input) => input.addEventListener("input", updateDashboard));
+
+        updateDashboard();
+      }
+
+      function updateDashboard() {
+        // --- GATHER ALL INPUTS ---
+        const dailyCustomers =
+          parseFloat(document.getElementById("dailyCustomers").value) || 0;
+        const avgSpend =
+          parseFloat(document.getElementById("avgSpend").value) || 0;
+        const foodCostPercent =
+          parseFloat(document.getElementById("foodCostPercent").value) || 0;
+        const staffSalary =
+          parseFloat(document.getElementById("staffSalary").value) || 0;
+        const monthlyTender =
+          parseFloat(document.getElementById("monthlyTender").value) || 0;
+        const otherCosts =
+          parseFloat(document.getElementById("otherCosts").value) || 0;
+        const marketingSpend =
+          parseFloat(document.getElementById("marketingSpend").value) || 0;
+        const newCustomers =
+          parseFloat(document.getElementById("newCustomers").value) || 0;
+        const visitsPerMonth =
+          parseFloat(document.getElementById("visitsPerMonth").value) || 0;
+        const startupCost =
+          parseFloat(document.getElementById("startupCost").value) || 0;
+        const workingDays = 26;
+
+        // --- CORE CALCULATIONS ---
+        const monthlyRevenue = dailyCustomers * avgSpend * workingDays;
+        const foodCostValue = monthlyRevenue * (foodCostPercent / 100);
+        const opex = staffSalary + monthlyTender + otherCosts + marketingSpend;
+        const totalExpenses = foodCostValue + opex;
+        const monthlyProfit = monthlyRevenue - totalExpenses;
+        const netProfitMargin =
+          monthlyRevenue > 0 ? (monthlyProfit / monthlyRevenue) * 100 : 0;
+        const contributionMargin = avgSpend * (1 - foodCostPercent / 100);
+        const breakEvenCustomers =
+          contributionMargin > 0
+            ? Math.ceil(
+                (opex - marketingSpend) / workingDays / contributionMargin
+              )
+            : 0;
+        const cac = newCustomers > 0 ? marketingSpend / newCustomers : 0;
+        const ltv =
+          avgSpend * visitsPerMonth * 9 -
+          avgSpend * visitsPerMonth * 9 * (foodCostPercent / 100); // LTV over 9-month academic year
+        const roiMonths = monthlyProfit > 0 ? startupCost / monthlyProfit : 0;
+
+        // --- UPDATE OVERVIEW KPIs ---
+        document.getElementById("kpi-revenue").textContent =
+          formatCurrency(monthlyRevenue);
+        document.getElementById("kpi-profit").textContent =
+          formatCurrency(monthlyProfit);
+        document.getElementById(
+          "kpi-breakeven"
+        ).textContent = `${breakEvenCustomers} Cust.`;
+        document.getElementById(
+          "kpi-margin"
+        ).textContent = `${netProfitMargin.toFixed(1)}%`;
+
+        // --- UPDATE OVERVIEW CHARTS ---
+        monthlyChart.data = {
+          labels: ["Summary"],
+          datasets: [
+            {
+              label: "Revenue",
+              data: [monthlyRevenue],
+              backgroundColor: "#3b82f6",
+            },
+            {
+              label: "Expenses",
+              data: [totalExpenses],
+              backgroundColor: "#ef4444",
+            },
+            {
+              label: "Profit",
+              data: [monthlyProfit],
+              backgroundColor: "#16a34a",
+            },
+          ],
+        };
+        monthlyChart.update();
+        expenseChart.data = {
+          labels: ["Food Cost", "Staff", "Tender", "Utilities+", "Marketing"],
+          datasets: [
+            {
+              data: [
+                foodCostValue,
+                staffSalary,
+                monthlyTender,
+                otherCosts,
+                marketingSpend,
+              ],
+              backgroundColor: [
+                "#ef4444",
+                "#3b82f6",
+                "#f97316",
+                "#a855f7",
+                "#14b8a6",
+              ],
+              hoverOffset: 4,
+            },
+          ],
+        };
+        expenseChart.update();
+
+        // --- UPDATE P&L PAGE ---
+        document.getElementById("pnl-revenue").textContent =
+          formatCurrency(monthlyRevenue);
+        document.getElementById("pnl-cogs").textContent = `(${formatCurrency(
+          foodCostValue
+        )})`;
+        document.getElementById("pnl-gross-profit").textContent =
+          formatCurrency(monthlyRevenue - foodCostValue);
+        document.getElementById("pnl-salary").textContent = `(${formatCurrency(
+          staffSalary
+        )})`;
+        document.getElementById("pnl-tender").textContent = `(${formatCurrency(
+          monthlyTender
+        )})`;
+        document.getElementById(
+          "pnl-utilities"
+        ).textContent = `(${formatCurrency(otherCosts)})`;
+        document.getElementById(
+          "pnl-marketing"
+        ).textContent = `(${formatCurrency(marketingSpend)})`;
+        document.getElementById(
+          "pnl-total-opex"
+        ).textContent = `(${formatCurrency(opex)})`;
+        document.getElementById("pnl-net-profit").textContent =
+          formatCurrency(monthlyProfit);
+
+        // --- UPDATE MARKETING PAGE ---
+        document.getElementById("mkt-cac").textContent = formatCurrency(cac);
+        document.getElementById("mkt-ltv").textContent = formatCurrency(ltv);
+        ltvCacChart.data = {
+          labels: ["Metrics"],
+          datasets: [
+            { label: "LTV", data: [ltv], backgroundColor: "#16a34a" },
+            { label: "CAC", data: [cac], backgroundColor: "#ef4444" },
+          ],
+        };
+        ltvCacChart.update();
+
+        // --- UPDATE OPERATIONS PAGE ---
+        document.getElementById("ops-roi").textContent =
+          roiMonths > 0 ? `~${roiMonths.toFixed(1)} Months` : "N/A";
+      }
+
+      window.onload = initializeDashboard;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Bites - Financial Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6; /* A light gray background */
+      }
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8">
+      <!-- Header -->
+      <header class="mb-8">
+        <h1 class="text-4xl font-extrabold text-gray-900">Campus Bites</h1>
+        <p class="text-xl text-gray-600">Financial Performance Dashboard</p>
+      </header>
+
+      <!-- Key Performance Indicators (KPIs) Section -->
+      <section
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      >
+        <!-- Card 1: Monthly Revenue -->
+        <div
+          class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between"
+        >
+          <div>
+            <p class="text-sm font-medium text-gray-500">
+              Target Monthly Revenue
+            </p>
+            <p class="text-3xl font-bold">₹3,74,400</p>
+          </div>
+          <div class="bg-blue-100 text-blue-600 p-4 rounded-full">
+            <i class="fa-solid fa-indian-rupee-sign fa-xl"></i>
+          </div>
+        </div>
+        <!-- Card 2: Monthly Profit -->
+        <div
+          class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between"
+        >
+          <div>
+            <p class="text-sm font-medium text-gray-500">
+              Target Monthly Profit
+            </p>
+            <p class="text-3xl font-bold text-green-600">₹1,28,128</p>
+          </div>
+          <div class="bg-green-100 text-green-600 p-4 rounded-full">
+            <i class="fa-solid fa-arrow-trend-up fa-xl"></i>
+          </div>
+        </div>
+        <!-- Card 3: Avg Customers / Day -->
+        <div
+          class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between"
+        >
+          <div>
+            <p class="text-sm font-medium text-gray-500">
+              Target Customers / Day
+            </p>
+            <p class="text-3xl font-bold">180</p>
+          </div>
+          <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full">
+            <i class="fa-solid fa-users fa-xl"></i>
+          </div>
+        </div>
+        <!-- Card 4: Food Cost % -->
+        <div
+          class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between"
+        >
+          <div>
+            <p class="text-sm font-medium text-gray-500">Target Food Cost</p>
+            <p class="text-3xl font-bold text-red-600">38%</p>
+          </div>
+          <div class="bg-red-100 text-red-600 p-4 rounded-full">
+            <i class="fa-solid fa-utensils fa-xl"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
+        <!-- Left Column: Monthly Performance & Break-Even -->
+        <div class="lg:col-span-3 flex flex-col gap-8">
+          <!-- Monthly Performance Chart -->
+          <div class="bg-white p-6 rounded-2xl shadow-md h-full">
+            <h2 class="text-xl font-bold mb-4">
+              Monthly Performance Scenarios
+            </h2>
+            <canvas id="monthlyPerformanceChart"></canvas>
+          </div>
+          <!-- Break-Even Analysis -->
+          <div class="bg-white p-6 rounded-2xl shadow-md h-full">
+            <h2 class="text-xl font-bold mb-4">Break-Even Analysis</h2>
+            <canvas id="breakEvenChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Right Column: Expense Breakdown & Startup Costs -->
+        <div class="lg:col-span-2 flex flex-col gap-8">
+          <!-- Expense Breakdown Chart -->
+          <div class="bg-white p-6 rounded-2xl shadow-md">
+            <h2 class="text-xl font-bold mb-4">
+              Target Monthly Expense Breakdown
+            </h2>
+            <canvas id="expenseBreakdownChart"></canvas>
+          </div>
+          <!-- Startup Costs Breakdown -->
+          <div class="bg-white p-6 rounded-2xl shadow-md">
+            <h2 class="text-xl font-bold mb-4">Startup Cost Allocation</h2>
+            <canvas id="startupCostsChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detailed Tables Section -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4">Detailed Financial Statistics</h2>
+        <div class="bg-white p-6 rounded-2xl shadow-md overflow-x-auto">
+          <h3 class="text-lg font-semibold mb-2">Monthly Scenarios</h3>
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3">Financial Metric</th>
+                <th class="p-3">Conservative Start</th>
+                <th class="p-3">Target Goal</th>
+                <th class="p-3">Optimistic Hit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b">
+                <td class="p-3 font-semibold">Monthly Revenue</td>
+                <td class="p-3">₹2,49,600</td>
+                <td class="p-3">₹3,74,400</td>
+                <td class="p-3">₹5,20,000</td>
+              </tr>
+              <tr class="border-b bg-red-50">
+                <td class="p-3 font-semibold">Total Monthly Expenses</td>
+                <td class="p-3">₹1,99,840</td>
+                <td class="p-3">₹2,46,272</td>
+                <td class="p-3">₹3,00,000</td>
+              </tr>
+              <tr class="border-b bg-green-50">
+                <td class="p-3 font-semibold">Net Profit (Before Tax)</td>
+                <td class="p-3 font-bold text-green-700">₹49,760</td>
+                <td class="p-3 font-bold text-green-700">₹1,28,128</td>
+                <td class="p-3 font-bold text-green-700">₹2,20,000</td>
+              </tr>
+              <tr class="border-b">
+                <td class="p-3 font-semibold">Net Profit Margin</td>
+                <td class="p-3">19.9%</td>
+                <td class="p-3">34.2%</td>
+                <td class="p-3">42.3%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // --- DATA FROM THE BUSINESS MODEL ---
+      const scenarios = ["Conservative", "Target", "Optimistic"];
+      const monthlyRevenue = [249600, 374400, 520000];
+      const monthlyExpenses = [199840, 246272, 300000];
+      const monthlyProfit = [49760, 128128, 220000];
+
+      const targetExpensesData = {
+        labels: [
+          "Raw Material",
+          "Salaries",
+          "Tender Fee",
+          "Utilities",
+          "Marketing & Misc",
+        ],
+        data: [142272, 60000, 10000, 27000, 12000], // Utilities & Marketing/Misc combined
+      };
+
+      const startupCostsData = {
+        labels: [
+          "Renovation",
+          "Kitchen Equipment",
+          "Licenses & Setup",
+          "Contingency Fund",
+        ],
+        data: [300000, 350000, 80000, 100000], // Used higher-end estimates
+      };
+
+      const breakEvenData = {
+        labels: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200],
+        revenue: [
+          0, 1600, 3200, 4800, 6400, 8000, 9600, 11200, 12800, 14400, 16000,
+        ],
+        costs: [
+          3846, 4486, 5126, 5766, 6406, 7046, 7686, 8326, 8966, 9606, 10246,
+        ], // Using monthly fixed cost of 100k/26 = 3846 + variable cost
+      };
+
+      // --- CHART RENDERING LOGIC ---
+
+      // 1. Monthly Performance Bar Chart
+      const ctxBar = document
+        .getElementById("monthlyPerformanceChart")
+        .getContext("2d");
+      new Chart(ctxBar, {
+        type: "bar",
+        data: {
+          labels: scenarios,
+          datasets: [
+            {
+              label: "Total Revenue",
+              data: monthlyRevenue,
+              backgroundColor: "rgba(59, 130, 246, 0.7)",
+              borderColor: "rgba(59, 130, 246, 1)",
+              borderWidth: 1,
+            },
+            {
+              label: "Total Expenses",
+              data: monthlyExpenses,
+              backgroundColor: "rgba(239, 68, 68, 0.7)",
+              borderColor: "rgba(239, 68, 68, 1)",
+              borderWidth: 1,
+            },
+            {
+              label: "Net Profit",
+              data: monthlyProfit,
+              backgroundColor: "rgba(22, 163, 74, 0.7)",
+              borderColor: "rgba(22, 163, 74, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return "₹" + value / 1000 + "k";
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // 2. Expense Breakdown Doughnut Chart
+      const ctxDoughnut = document
+        .getElementById("expenseBreakdownChart")
+        .getContext("2d");
+      new Chart(ctxDoughnut, {
+        type: "doughnut",
+        data: {
+          labels: targetExpensesData.labels,
+          datasets: [
+            {
+              label: "Expense Amount",
+              data: targetExpensesData.data,
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.8)",
+                "rgba(54, 162, 235, 0.8)",
+                "rgba(255, 206, 86, 0.8)",
+                "rgba(75, 192, 192, 0.8)",
+                "rgba(153, 102, 255, 0.8)",
+              ],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+      // 3. Startup Cost Pie Chart
+      const ctxPie = document
+        .getElementById("startupCostsChart")
+        .getContext("2d");
+      new Chart(ctxPie, {
+        type: "pie",
+        data: {
+          labels: startupCostsData.labels,
+          datasets: [
+            {
+              label: "Startup Cost",
+              data: startupCostsData.data,
+              backgroundColor: [
+                "rgba(251, 146, 60, 0.8)",
+                "rgba(244, 63, 94, 0.8)",
+                "rgba(139, 92, 246, 0.8)",
+                "rgba(16, 185, 129, 0.8)",
+              ],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+      // 4. Break-Even Line Chart
+      const ctxLine = document
+        .getElementById("breakEvenChart")
+        .getContext("2d");
+      new Chart(ctxLine, {
+        type: "line",
+        data: {
+          labels: breakEvenData.labels,
+          datasets: [
+            {
+              label: "Total Revenue",
+              data: breakEvenData.revenue,
+              borderColor: "rgba(59, 130, 246, 1)",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+              fill: true,
+              tension: 0.1,
+            },
+            {
+              label: "Total Costs",
+              data: breakEvenData.costs,
+              borderColor: "rgba(239, 68, 68, 1)",
+              backgroundColor: "rgba(239, 68, 68, 0.1)",
+              fill: true,
+              tension: 0.1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Customers per Day",
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return "₹" + value;
+                },
+              },
+              title: {
+                display: true,
+                text: "Amount (INR)",
+              },
+            },
+          },
+          plugins: {
+            tooltip: {
+              mode: "index",
+              intersect: false,
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
