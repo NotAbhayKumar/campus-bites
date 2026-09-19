@@ -31,3 +31,6 @@ A comprehensive business model for a multi-format food destination located withi
 * **Supply Chain Management:** Daily procurement from a wholesale market to ensure freshness and control costs.
 * **Marketing Funnel:** A digital-first approach to build brand awareness and loyalty.
 * **Future Growth Plan:** A clear roadmap for scaling through catering, productization, and expansion to other institutions.
+## contributor
+* Siddhartha verma
+* Abhay kumar
